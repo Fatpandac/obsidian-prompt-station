@@ -1,0 +1,10 @@
+{
+	"id": "obsidian-prompt-station",
+	"name": "Prompt Station",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "This is an OpenAI plugin for Obsidian which allows you to quickly use the OpenAI API with your prompt to generate text.",
+	"author": "Fatpandac",
+	"authorUrl": "https://fatpandac.com",
+	"isDesktopOnly": false
+}
