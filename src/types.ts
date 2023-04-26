@@ -2,6 +2,8 @@
 export {};
 
 declare global {
+	let __DEV__: boolean
+
 	export type Prompt = {
 		name: string;
 		value: string;
@@ -13,7 +15,7 @@ declare global {
 		prompts: Array<Prompt>;
 	}
 
-	export interface ReplaceSwitch {
-		[key: string]: () => string;
+	export type ReplaceSwitch = {
+		[key: string]: (match: string) => string;
 	}
 }

@@ -1,10 +1,7 @@
 import { App, MarkdownView, PluginManifest } from "obsidian";
 import { GetAllTagsInTheVault } from "./utils";
-
-const enum ReplaceFlag {
-	CONTENT = "content",
-	TAGS = "tags",
-}
+import { ReplaceFlags } from "./replaceFlags";
+import dayjs from "dayjs";
 
 export class PromptCompiler {
 	app: App;
@@ -16,25 +13,24 @@ export class PromptCompiler {
 		this.view = view;
 	}
 
+	private replaceSwitch: ReplaceSwitch = {
+		[ReplaceFlags.CONTENT]: (_match) => this.view.editor.getValue(),
+		[ReplaceFlags.TAGS]: (_match) =>
+			new GetAllTagsInTheVault(this.app, this.manifest).pull().join(" "),
+		[ReplaceFlags.DATE]: (match) => {
+			const format = match.split(":")[1];
+			const date = dayjs().format(format);
+
+			return date;
+		},
+		[ReplaceFlags.SELECTED]: (_match) => this.view.editor.getSelection(),
+	};
+
 	compiled(prompt: Prompt) {
-		const replaceSwitch: ReplaceSwitch = {
-			[ReplaceFlag.CONTENT]: () => {
-        const content = this.view.editor.getValue();
+		return prompt.value.replace(/{{(.*?)}}/g, (match, p1) => {
+			const flag = p1.split(":")[0] as ReplaceFlags;
 
-        return content;
-      },
-			[ReplaceFlag.TAGS]: () => {
-				const tags = new GetAllTagsInTheVault(
-					this.app,
-					this.manifest
-				).pull();
-
-				return tags.join(" ");
-			},
-		};
-
-		return prompt.value.replace(/{{(.*?)}}/g, (_match, p1) =>
-			replaceSwitch[p1]()
-		);
+			return flag in this.replaceSwitch ? this.replaceSwitch[flag](p1) : match;
+		});
 	}
 }

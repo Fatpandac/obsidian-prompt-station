@@ -54,6 +54,10 @@ export class PromptModal extends SuggestModal<Prompt> {
       new Notice("Oops, something went wrong. Please check your OpenAI key and try again.");
     }
 
-    this.editor.replaceRange(result, this.editor.getCursor());
+    if (__DEV__) {
+      this.editor.replaceRange(`compliedPrompt:\n${compliedPrompt}\n\nResult:\n${result}`, this.editor.getCursor());
+    } else {
+      this.editor.replaceRange(result, this.editor.getCursor());
+    }
   }
 }
